@@ -3,7 +3,7 @@
 ######### 自定义常量 ##########
 
 _constant() {
-    script_version="v2023-11-17"
+    script_version="v2024-03-14"
     old_IFS="$IFS"
     work_dir="./sp-github-i-abc"
     node_set=""
@@ -61,6 +61,21 @@ _constant() {
     purple='\033[1;35m'
     cyan='\033[1;36m'
     endc='\033[0m'
+}
+
+########## 进度条 ###########
+_show_progress_bar() {
+    while true; do
+        for i in '-' '\' '|' '/'; do
+            printf "\r  ${green}测试进行中 %s${endc} " ${i}
+            sleep 0.2
+        done
+    done &
+    local barpid=$!
+    trap 'kill ${barpid} 2>/dev/null' EXIT
+    bash -c "$1"
+    kill ${barpid} 2>/dev/null
+    printf "\r"
 }
 
 ########## 横幅 ###########
@@ -348,14 +363,14 @@ _speedtest_cli_test() {
     awk -F, '{ print $3 }' "$work_dir"/speedtest-cli-node.txt >"$work_dir"/speedtest-cli-option.txt
     _filter_option_speedtest_cli "$work_dir"/speedtest-cli-option.txt "$work_dir"/speedtest-cli-option-filter.txt
     # speedtest-cli测试、输出
-    local option_para
-    local count="1"
+    option_para=""
+    count="1"
     while IFS= read -r option_para; do
         IFS="$old_IFS"
         local node_name latency jitter download upload
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # speedtest-cli测试
-        timeout --foreground 70 "$work_dir"/speedtest --accept-license --accept-gdpr -f json-pretty $option_para >"$work_dir"/speedtest-cli-"$count".json 2>"$work_dir"/speedtest-cli-"$count"-error.json
+        _show_progress_bar "timeout --foreground 70 ${work_dir}/speedtest --accept-license --accept-gdpr -f json-pretty ${option_para} >${work_dir}/speedtest-cli-${count}.json 2>${work_dir}/speedtest-cli-${count}-error.json"
         # speedtest-cli输出
         if [ -s "$work_dir"/speedtest-cli-"$count".json ]; then
             # 节点名称
@@ -398,14 +413,14 @@ _bim_core_test() {
     awk -F, '{ print $3 }' "$work_dir"/bim-core-node.txt >"$work_dir"/bim-core-option.txt
     _filter_option_bim_core "$work_dir"/bim-core-option.txt "$work_dir"/bim-core-option-filter.txt
     # bim-core测试、输出
-    local option_para
-    local count="1"
+    option_para=""
+    count="1"
     while IFS= read -r option_para; do
         IFS="$old_IFS"
         local node_name latency jitter download upload
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # bim-core测试
-        timeout --foreground 70 "$work_dir"/bim-core $option_para >"$work_dir"/bim-core-"$count".json 2>"$work_dir"/bim-core-"$count"-error.json
+        _show_progress_bar "timeout --foreground 70 ${work_dir}/bim-core ${option_para} >${work_dir}/bim-core-${count}.json 2>${work_dir}/bim-core-${count}-error.json"
         # bim-core输出
         if [ -s "$work_dir"/bim-core-"$count".json ]; then
             # 节点名称
@@ -444,14 +459,14 @@ _speedtest_go_test() {
     awk -F, '{ print $3 }' "$work_dir"/speedtest-go-node.txt >"$work_dir"/speedtest-go-option.txt
     _filter_option_speedtest_go "$work_dir"/speedtest-go-option.txt "$work_dir"/speedtest-go-option-filter.txt
     # speedtest-go测试、输出
-    local option_para
-    local count="1"
+    option_para=""
+    count="1"
     while IFS= read -r option_para; do
         IFS="$old_IFS"
         local node_name latency jitter download upload
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # speedtest-go测试
-        timeout --foreground 70 "$work_dir"/speedtest-go $option_para >"$work_dir"/speedtest-go-"$count".json 2>"$work_dir"/speedtest-go-"$count"-error.json
+        _show_progress_bar "timeout --foreground 70 ${work_dir}/speedtest-go ${option_para} >${work_dir}/speedtest-go-${count}.json 2>${work_dir}/speedtest-go-${count}-error.json"
         # speedtest-go输出
         if [ -s "$work_dir"/speedtest-go-"$count".json ] && ! grep -q "Fatal" "$work_dir"/speedtest-go-"$count".json; then
             # 节点名称
@@ -503,14 +518,14 @@ _librespeed_cli_test() {
     awk -F, '{ print $3 }' "$work_dir"/librespeed-cli-node.txt >"$work_dir"/lbrespeed-cli-option.txt
     _filter_option_librespeed_cli "$work_dir"/lbrespeed-cli-option.txt "$work_dir"/lbrespeed-cli-option-filter.txt
     # librespeed-cli测试、输出
-    local option_para
-    local count="1"
+    option_para=""
+    count="1"
     while IFS= read -r option_para; do
         IFS="$old_IFS"
         local node_name latency jitter download upload
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # librespeed-cli测试
-        timeout --foreground 70 "$work_dir"/librespeed-cli --json $option_para >"$work_dir"/librespeed-cli-"$count".json 2>"$work_dir"/librespeed-cli-"$count"-error.json
+        _show_progress_bar "timeout --foreground 70 ${work_dir}/librespeed-cli --json ${option_para} >${work_dir}/librespeed-cli-${count}.json 2>${work_dir}/librespeed-cli-${count}-error.json"
         # librespeed-cli输出
         if [ -s "$work_dir"/librespeed-cli-"$count".json ]; then
             # 节点名称
@@ -552,8 +567,8 @@ _iperf3_test() {
     awk -F',' '{ print $3 }' "$work_dir"/iperf3-node.txt >"$work_dir"/iperf3-option.txt
     _filter_option_iperf3 "$work_dir"/iperf3-option.txt "$work_dir"/iperf3-option-filter.txt
     # iperf3测试、输出
-    local option_para
-    local count="1"
+    option_para=""
+    count="1"
     while IFS= read -r option_para; do
         IFS="$old_IFS"
         local node_name download upload latency jitter
@@ -573,7 +588,7 @@ _iperf3_test() {
             # 上传
             local i_busy
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
-                timeout --foreground 70 iperf3 -f m $option_para >"$work_dir"/iperf3-"$count".json 2>"$work_dir"/iperf3-"$count"-error.json
+                _show_progress_bar "timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-"$count".json 2>${work_dir}/iperf3-"$count"-error.json"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
@@ -592,7 +607,7 @@ _iperf3_test() {
             fi
             # 下载
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
-                timeout --foreground 70 iperf3 -f m -R $option_para >"$work_dir"/iperf3-"$count".json 2>"$work_dir"/iperf3-"$count"-error.json
+                _show_progress_bar "timeout --foreground 70 iperf3 -f m -R ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
@@ -614,7 +629,7 @@ _iperf3_test() {
         else
             # 单向
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
-                timeout --foreground 70 iperf3 -f m $option_para >"$work_dir"/iperf3-"$count".json 2>"$work_dir"/iperf3-"$count"-error.json
+                _show_progress_bar "timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
@@ -858,7 +873,7 @@ _rm_dir() {
 ########## main ##########
 
 _main() {
-    trap '{ echo; _rm_dir; }' SIGINT SIGQUIT SIGTERM
+    trap '{ echo; _rm_dir; }' EXIT
     _check_architecture
     _constant
     _print_banner_1
