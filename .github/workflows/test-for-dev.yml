@@ -14,4 +14,5 @@ jobs:
           ref: 'sh-dev'
       - name: Test
         run: |
+          sed -i 's)sleep 0.1)sleep 10)' speedtest.sh
           bash speedtest.sh <<< '18'
