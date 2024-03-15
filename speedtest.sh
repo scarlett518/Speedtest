@@ -3,7 +3,7 @@
 ######### 自定义常量 ##########
 
 _constant() {
-    script_version="v2024-03-14"
+    script_version="v2024-03-15"
     old_IFS="$IFS"
     work_dir="./sp-github-i-abc"
     node_set=""
@@ -106,6 +106,17 @@ _print_banner_4() {
     echo
 }
 
+########## 检测是否为 root ##########
+_check_user() {
+    sudo_flag=""
+    if [[ "${UID}" -eq 0 ]]; then
+        echo "当前用户是 root"
+    else
+        echo "当前用户不是 root"
+        sudo_flag="sudo"
+    fi
+}
+
 ########## 确认架构及其对应版本的程序 ##########
 
 _check_architecture() {
@@ -179,23 +190,17 @@ _check_package() {
         # 确认包管理器并安装软件包
         # RedHat
         if command -v dnf; then
-            dnf install -y "$2"
+            ${sudo_flag} dnf install -y "$2"
         elif command -v yum; then
-            yum install -y "$2"
+            ${sudo_flag} yum install -y "$2"
         # Debian
         elif command -v apt; then
-            apt install -y "$2"
-        # Alpine
-        elif command -v apk; then
-            apk add "$2"
+            ${sudo_flag} apt install -y "$2"
         # Arch Linux
         elif command -v pacman; then
-            pacman -S --noconfirm "$2"
-        # openSUSE
-        elif command -v zypper; then
-            zypper install -y "$2"
+            ${sudo_flag} pacman -S --noconfirm "$2"
         else
-            echo "本机非RedHat、Debian、Alpine、Arch Linux、openSUSE"
+            echo "本机非RedHat、Debian、Arch Linux"
             echo "暂不支持自动安装所需的软件包"
             exit 1
         fi
@@ -860,6 +865,7 @@ _main() {
     _check_architecture
     _constant
     _print_banner_1
+    _check_user
     _check_region
     _check_package tar tar
     _check_package curl curl
