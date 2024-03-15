@@ -71,8 +71,7 @@ _show_progress_bar() {
             sleep 0.1
         done
     done &
-    local bar_pid=$!
-    trap 'kill ${bar_pid} 2>/dev/null' EXIT
+    bar_pid="$!"
     bash -c "$1"
     kill ${bar_pid} 2>/dev/null
     printf "\r"
@@ -857,7 +856,7 @@ _rm_dir() {
 ########## main ##########
 
 _main() {
-    trap '{ echo; _rm_dir; }' EXIT
+    trap '{ kill ${bar_pid} 2>/dev/null; printf "\r"; _rm_dir; }' EXIT
     _check_architecture
     _constant
     _print_banner_1
