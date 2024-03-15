@@ -66,15 +66,15 @@ _constant() {
 ########## 进度条 ###########
 _show_progress_bar() {
     while true; do
-        for i in '-' '\' '|' '/'; do
-            printf "\r  ${green}测试进行中 %s${endc} " ${i}
-            sleep 0.2
+        for i in '⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏'; do
+            printf "\r  ${green}测试进行中 %s${endc} " "${i}"
+            sleep 0.1
         done
     done &
-    local barpid=$!
-    trap 'kill ${barpid} 2>/dev/null' EXIT
+    local bar_pid=$!
+    trap 'kill ${bar_pid} 2>/dev/null' EXIT
     bash -c "$1"
-    kill ${barpid} 2>/dev/null
+    kill ${bar_pid} 2>/dev/null
     printf "\r"
 }
 
@@ -101,7 +101,7 @@ _print_banner_3() {
 
 _print_banner_4() {
     printf "%-72s\n" "-" | sed 's)\s)-)g'
-    echo "当前时间：$(date +"%Y-%m-%d %H:%M:%S %Z")"
+    echo "系统时间：$(date +"%Y-%m-%d %H:%M:%S %Z")"
     echo "北京时间: $(TZ=Asia/Shanghai date --rfc-3339=seconds)"
     printf "%-72s\n" "-" | sed 's)\s)-)g'
     echo
