@@ -1,7 +1,9 @@
 name: Test for sh-dev
 on:
+  workflow_dispatch:
   push:
     branches:
+      - main
       - sh-dev
 jobs:
   test:
