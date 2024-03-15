@@ -1,0 +1,17 @@
+name: Test for sh-dev
+on:
+  push:
+    branches:
+      - sh-dev
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: 'i-abc/Speedtest'
+          ref: 'sh-dev'
+      - name: Test
+        run: |
+          bash speedtest.sh <<< '18'
