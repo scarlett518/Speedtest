@@ -155,7 +155,7 @@ _check_architecture() {
 
 _check_region() {
     local loc
-    loc=$(curl -s -L "https://www.visa.cn/cdn-cgi/trace" | awk -F'=' '/loc/{ print $2 }')
+    loc=$(curl -s -L "https://www.qualcomm.cn/cdn-cgi/trace" | awk -F'=' '/loc/{ print $2 }')
     echo "loc: $loc"
     if [ -z "$loc" ]; then
         echo "使用镜像源"
