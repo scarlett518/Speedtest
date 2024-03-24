@@ -3,12 +3,12 @@
 ######### 自定义常量 ##########
 
 _constant() {
-    script_version="v2024-03-15"
+    script_version="v2024-03-24"
     old_IFS="$IFS"
     work_dir="./sp-github-i-abc"
     node_set=""
     node_set_1="https://raw.githubusercontent.com/i-abc/speedtest/node/all-node.txt"
-    node_set_2="https://mirror.ghproxy.com/https://raw.githubusercontent.com/i-abc/speedtest/node/all-node.txt"
+    node_set_2="https://asset.bash.icu/https://raw.githubusercontent.com/i-abc/speedtest/node/all-node.txt"
 
     # url_1为官方源，url_2为镜像源，皆会进行SHA-256检测
 
@@ -21,7 +21,7 @@ _constant() {
     speedtest_cli_tar_armel_sha256="629a455a2879224bd0dbd4b36d8c721dda540717937e4660b4d2c966029466bf"
     speedtest_cli_tar_url=""
     speedtest_cli_tar_url_1="https://install.speedtest.net/app/cli/ookla-speedtest-${speedtest_cli_version}-linux-${speedtest_cli_arch}.tgz"
-    speedtest_cli_tar_url_2="https://mirror.ghproxy.com/https://raw.githubusercontent.com/i-abc/speedtest/asset/speedtest-cli/v${speedtest_cli_version}/ookla-speedtest-${speedtest_cli_version}-linux-${speedtest_cli_arch}.tgz"
+    speedtest_cli_tar_url_2="https://asset.bash.icu/https://raw.githubusercontent.com/i-abc/speedtest/asset/speedtest-cli/v${speedtest_cli_version}/ookla-speedtest-${speedtest_cli_version}-linux-${speedtest_cli_arch}.tgz"
 
     # bim-core，https://github.com/veoco/bim-core
     bim_core_version="0.17.0"
@@ -29,7 +29,7 @@ _constant() {
     bim_core_tar_aarch64_sha256="fa62357f94050fbb7851d1bbb7e393d8e1301281ce03c43b37dae55cbf08c198"
     bim_core_tar_url=""
     bim_core_tar_url_1="https://github.com/veoco/bim-core/releases/download/v${bim_core_version}/bimc-${bim_core_arch}-unknown-linux-musl"
-    bim_core_tar_url_2="https://mirror.ghproxy.com/https://github.com/veoco/bim-core/releases/download/v${bim_core_version}/bimc-${bim_core_arch}-unknown-linux-musl"
+    bim_core_tar_url_2="https://asset.bash.icu/https://github.com/veoco/bim-core/releases/download/v${bim_core_version}/bimc-${bim_core_arch}-unknown-linux-musl"
 
     # speedtest-go，https://github.com/showwin/speedtest-go
     speedtest_go_version="1.6.9"
@@ -40,7 +40,7 @@ _constant() {
     speedtest_go_tar_armv6_sha256="bcca71c5daf2f9d9271709bbeddff26e63089a3be4ab3a2466f7a932ae8bec31"
     speedtest_go_tar_url=""
     speedtest_go_tar_url_1="https://github.com/showwin/speedtest-go/releases/download/v${speedtest_go_version}/speedtest-go_${speedtest_go_version}_Linux_${speedtest_go_arch}.tar.gz"
-    speedtest_go_tar_url_2="https://mirror.ghproxy.com/https://github.com/showwin/speedtest-go/releases/download/v${speedtest_go_version}/speedtest-go_${speedtest_go_version}_Linux_${speedtest_go_arch}.tar.gz"
+    speedtest_go_tar_url_2="https://asset.bash.icu/https://github.com/showwin/speedtest-go/releases/download/v${speedtest_go_version}/speedtest-go_${speedtest_go_version}_Linux_${speedtest_go_arch}.tar.gz"
 
     # librespeed-cli，https://github.com/librespeed/speedtest-cli
     librespeed_cli_version="1.0.10"
@@ -51,7 +51,7 @@ _constant() {
     librespeed_cli_tar_armv6_sha256="def98bbf0e79805411bca312e9e6bcddd12cd0abf4e6584a3ae05aa20c762b64"
     librespeed_cli_tar_url=""
     librespeed_cli_tar_url_1="https://github.com/librespeed/speedtest-cli/releases/download/v${librespeed_cli_version}/librespeed-cli_${librespeed_cli_version}_linux_${librespeed_cli_arch}.tar.gz"
-    librespeed_cli_tar_url_2="https://mirror.ghproxy.com/https://github.com/librespeed/speedtest-cli/releases/download/v${librespeed_cli_version}/librespeed-cli_${librespeed_cli_version}_linux_${librespeed_cli_arch}.tar.gz"
+    librespeed_cli_tar_url_2="https://asset.bash.icu/https://github.com/librespeed/speedtest-cli/releases/download/v${librespeed_cli_version}/librespeed-cli_${librespeed_cli_version}_linux_${librespeed_cli_arch}.tar.gz"
 
     # 配色
     red='\033[1;31m'
@@ -155,7 +155,7 @@ _check_architecture() {
 
 _check_region() {
     local loc
-    loc=$(curl -s "https://www.visa.cn/cdn-cgi/trace" | awk -F'=' '/loc/{ print $2 }')
+    loc=$(curl -s -L "https://www.visa.cn/cdn-cgi/trace" | awk -F'=' '/loc/{ print $2 }')
     echo "loc: $loc"
     if [ -z "$loc" ]; then
         echo "使用镜像源"
@@ -282,12 +282,12 @@ _get_node_list() {
     _print_banner_1
     echo -e "${blue}↓    ↓    ↓    ↓    ↓    ↓   测速节点列表   ↓    ↓    ↓    ↓    ↓    ↓${endc}"
     echo -e "0. \033[1m自定义测速节点\033[0m"
-    curl -sL "$node_set" | awk '$0!~/http/{print}'
+    curl -s -L "$node_set" | awk '$0!~/http/{print}'
     printf "${yellow}%-s${endc}" "请输入您想选择的节点序号: "
     read -r node_selection_1
     # 某类节点
     if [ "$node_selection_1" -ne 0 ]; then
-        node_url=$(curl -sL "$node_set" | awk -F. "\$1== $node_selection_1 { getline; print }")
+        node_url=$(curl -s -L "$node_set" | awk -F. "\$1== $node_selection_1 { getline; print }")
         curl -o "$work_dir"/all-node.txt -L "$node_url"
     elif [ "$node_selection_1" -eq 0 ]; then
         printf "${yellow}%-s${endc}" "请输入您的自定义节点链接(http或本地绝对路径): "
@@ -295,14 +295,14 @@ _get_node_list() {
         # 判断自定义节点是网络链接还是本地文件
         # 网络，http
         if [[ "$node_url_custom" =~ \w{0}https?:// ]]; then
-            first_line="$(curl -sL "$node_url_custom" | awk -F'.' NR==1'{ print $1 }')"
-            second_line="$(curl -sL "$node_url_custom" | awk NR==2)"
+            first_line="$(curl -s -L "$node_url_custom" | awk -F'.' NR==1'{ print $1 }')"
+            second_line="$(curl -s -L "$node_url_custom" | awk NR==2)"
             if [ "$first_line" -eq 1 ] &>/dev/null && echo "$second_line" | grep -q -E "\w{0}https?://" &>/dev/null; then
                 node_set="$node_url_custom"
-                curl -sL "$node_set" | awk '$0!~/http/{print}'
+                curl -s -L "$node_set" | awk '$0!~/http/{print}'
                 printf "${yellow}%-s${endc}" "请输入您想选择的节点序号: "
                 read -r node_selection_2
-                node_url=$(curl -sL "$node_set" | awk -F. "\$1== $node_selection_2 { getline; print }")
+                node_url=$(curl -s -L "$node_set" | awk -F. "\$1== $node_selection_2 { getline; print }")
                 curl -o "$work_dir"/all-node.txt -L "$node_url"
             else
                 node_url="$node_url_custom"
@@ -592,7 +592,7 @@ _iperf3_test() {
             # 上传
             local i_busy
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
-                _show_progress_bar "timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-"$count".json 2>${work_dir}/iperf3-"$count"-error.json"
+                _show_progress_bar "timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
