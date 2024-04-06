@@ -3,7 +3,7 @@
 ######### 自定义常量 ##########
 
 _constant() {
-    script_version="v2024-03-24"
+    script_version="v2024-04-06"
     old_IFS="$IFS"
     work_dir="./sp-github-i-abc"
     node_set=""
@@ -101,9 +101,8 @@ _print_banner_3() {
 _print_banner_4() {
     printf "%-72s\n" "-" | sed 's)\s)-)g'
     echo "系统时间：$(date +"%Y-%m-%d %H:%M:%S %Z")"
-    echo "北京时间: $(TZ=Asia/Shanghai date --rfc-3339=seconds)"
+    echo "北京时间: $(TZ=Asia/Shanghai date +"%Y-%m-%d %H:%M:%S %Z")"
     printf "%-72s\n" "-" | sed 's)\s)-)g'
-    echo
 }
 
 ########## 检测是否为 root ##########
@@ -154,7 +153,6 @@ _check_architecture() {
 ########## 检测地区，指定下载源 ##########
 
 _check_region() {
-    local loc
     loc=$(curl -s -L "https://www.qualcomm.cn/cdn-cgi/trace" | awk -F'=' '/loc/{ print $2 }')
     echo "loc: $loc"
     if [ -z "$loc" ]; then
@@ -858,10 +856,34 @@ _rm_dir() {
     exit 0
 }
 
+########## debug ##########
+
+_debug() {
+    local debug_tar_name
+    if [[ "$debug_flag" -eq 1 ]]; then
+        {
+            echo "OS info:"
+            cat /etc/os-release
+            echo "Shell info:"
+            echo "$SHELL"
+            echo "User info:"
+            echo "$UID"
+            echo "Loc info:"
+            echo "$loc"
+        } >$work_dir/info.txt
+        debug_tar_name="sp-debug-$(TZ=Asia/Shanghai date +"%Y%m%d%H%M%S").tar"
+        touch $work_dir/1.json
+        tar -cf "$work_dir/$debug_tar_name" ${work_dir}/*.{json,txt}
+        printf "\n${red}%-s${endc}\n" "方便的话欢迎将到GitHub反馈下述结果："
+        curl -X POST -s -Fc=@"$work_dir/$debug_tar_name" -Fn="${debug_tar_name%.*}" -Fe=90d 'https://pastebin.888853.xyz'
+        echo
+    fi
+}
+
 ########## main ##########
 
 _main() {
-    trap '{ kill ${bar_pid} 2>/dev/null; printf "\r"; _rm_dir; }' EXIT
+    trap '{ kill ${bar_pid} 2>/dev/null; printf "\r"; _debug; _rm_dir; }' EXIT
     _check_architecture
     _constant
     _print_banner_1
@@ -890,5 +912,11 @@ _main() {
 }
 
 ####################
+
+for arg in "$@"; do
+    if [[ "$arg" == "--debug" ]]; then
+        debug_flag="1"
+    fi
+done
 
 _main
