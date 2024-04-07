@@ -8,7 +8,7 @@ _constant() {
     work_dir="./sp-github-i-abc"
     node_set=""
     node_set_1="https://raw.githubusercontent.com/i-abc/speedtest/node/all-node.txt"
-    node_set_2="https://asset.bash.icu/https://raw.githubusercontent.com/i-abc/speedtest/node/all-node.txt"
+    node_set_2="https://asset.bash.icu/https://raw.githubusercontent.com/i-abc/speedtest/node/all-node-mirror.txt"
 
     # url_1为官方源，url_2为镜像源，皆会进行SHA-256检测
 
