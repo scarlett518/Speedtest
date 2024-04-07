@@ -3,7 +3,7 @@
 ######### 自定义常量 ##########
 
 _constant() {
-    script_version="v2024-04-06"
+    script_version="v2024-04-07"
     old_IFS="$IFS"
     work_dir="./sp-github-i-abc"
     node_set=""
@@ -369,9 +369,9 @@ _speedtest_cli_test() {
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # speedtest-cli测试
         _show_progress_bar &
-        bar_pid="$!"
+        bar_pid="$!" && disown "$bar_pid"
         timeout --foreground 70 ${work_dir}/speedtest --accept-license --accept-gdpr -f json-pretty ${option_para} >${work_dir}/speedtest-cli-${count}.json 2>${work_dir}/speedtest-cli-${count}-error.json
-        kill "$bar_pid" && printf "\r"
+        kill "$bar_pid" 2>/dev/null && printf "\r"
         # speedtest-cli输出
         if [ -s "$work_dir"/speedtest-cli-"$count".json ]; then
             # 节点名称
@@ -422,9 +422,9 @@ _bim_core_test() {
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # bim-core测试
         _show_progress_bar &
-        bar_pid="$!"
+        bar_pid="$!" && disown "$bar_pid"
         timeout --foreground 70 ${work_dir}/bim-core ${option_para} >${work_dir}/bim-core-${count}.json 2>${work_dir}/bim-core-${count}-error.json
-        kill "$bar_pid" && printf "\r"
+        kill "$bar_pid" 2>/dev/null && printf "\r"
         # bim-core输出
         if [ -s "$work_dir"/bim-core-"$count".json ]; then
             # 节点名称
@@ -471,9 +471,9 @@ _speedtest_go_test() {
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # speedtest-go测试
         _show_progress_bar &
-        bar_pid="$!"
+        bar_pid="$!" && disown "$bar_pid"
         timeout --foreground 70 ${work_dir}/speedtest-go ${option_para} >${work_dir}/speedtest-go-${count}.json 2>${work_dir}/speedtest-go-${count}-error.json
-        kill "$bar_pid" && printf "\r"
+        kill "$bar_pid" 2>/dev/null && printf "\r"
         # speedtest-go输出
         if [ -s "$work_dir"/speedtest-go-"$count".json ] && ! grep -q "Fatal" "$work_dir"/speedtest-go-"$count".json; then
             # 节点名称
@@ -533,9 +533,9 @@ _librespeed_cli_test() {
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # librespeed-cli测试
         _show_progress_bar &
-        bar_pid="$!"
+        bar_pid="$!" && disown "$bar_pid"
         timeout --foreground 70 ${work_dir}/librespeed-cli --json ${option_para} >${work_dir}/librespeed-cli-${count}.json 2>${work_dir}/librespeed-cli-${count}-error.json
-        kill "$bar_pid" && printf "\r"
+        kill "$bar_pid" 2>/dev/null && printf "\r"
         # librespeed-cli输出
         if [ -s "$work_dir"/librespeed-cli-"$count".json ]; then
             # 节点名称
@@ -599,9 +599,9 @@ _iperf3_test() {
             local i_busy
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
                 _show_progress_bar &
-                bar_pid="$!"
+                bar_pid="$!" && disown "$bar_pid"
                 timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json
-                kill "$bar_pid" && printf "\r"
+                kill "$bar_pid" 2>/dev/null && printf "\r"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
@@ -621,9 +621,9 @@ _iperf3_test() {
             # 下载
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
                 _show_progress_bar &
-                bar_pid="$!"
+                bar_pid="$!" && disown "$bar_pid"
                 timeout --foreground 70 iperf3 -f m -R ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json
-                kill "$bar_pid" && printf "\r"
+                kill "$bar_pid" 2>/dev/null && printf "\r"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
@@ -646,9 +646,9 @@ _iperf3_test() {
             # 单向
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
                 _show_progress_bar &
-                bar_pid="$!"
+                bar_pid="$!" && disown "$bar_pid"
                 timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json
-                kill "$bar_pid" && printf "\r"
+                kill "$bar_pid" 2>/dev/null && printf "\r"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
