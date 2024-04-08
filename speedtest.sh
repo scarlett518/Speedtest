@@ -3,12 +3,12 @@
 ######### 自定义常量 ##########
 
 _constant() {
-    script_version="v2024-04-06"
+    script_version="v2024-04-07"
     old_IFS="$IFS"
     work_dir="./sp-github-i-abc"
     node_set=""
     node_set_1="https://raw.githubusercontent.com/i-abc/speedtest/node/all-node.txt"
-    node_set_2="https://asset.bash.icu/https://raw.githubusercontent.com/i-abc/speedtest/node/all-node.txt"
+    node_set_2="https://asset.bash.icu/https://raw.githubusercontent.com/i-abc/speedtest/node/all-node-mirror.txt"
 
     # url_1为官方源，url_2为镜像源，皆会进行SHA-256检测
 
@@ -65,16 +65,12 @@ _constant() {
 
 ########## 进度条 ###########
 _show_progress_bar() {
-    while true; do
-        for i in '⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏'; do
-            printf "\r  ${green}测试进行中 %s${endc} " "${i}"
-            sleep 0.1
-        done
-    done &
-    bar_pid="$!"
-    bash -c "$1"
-    kill ${bar_pid} 2>/dev/null
-    printf "\r"
+    local bar="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+    local i=0
+    local n="${#bar}"
+    while sleep 0.1; do
+        printf "\r  ${green}测试进行中 %s${endc} " "${bar:i++%n:1}"
+    done
 }
 
 ########## 横幅 ###########
@@ -102,7 +98,7 @@ _print_banner_4() {
     printf "%-72s\n" "-" | sed 's)\s)-)g'
     echo "系统时间：$(date +"%Y-%m-%d %H:%M:%S %Z")"
     echo "北京时间: $(TZ=Asia/Shanghai date +"%Y-%m-%d %H:%M:%S %Z")"
-    printf "%-72s\n" "-" | sed 's)\s)-)g'
+    printf "%-72s\n\n" "-" | sed 's)\s)-)g'
 }
 
 ########## 检测是否为 root ##########
@@ -372,7 +368,10 @@ _speedtest_cli_test() {
         local node_name latency jitter download upload
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # speedtest-cli测试
-        _show_progress_bar "timeout --foreground 70 ${work_dir}/speedtest --accept-license --accept-gdpr -f json-pretty ${option_para} >${work_dir}/speedtest-cli-${count}.json 2>${work_dir}/speedtest-cli-${count}-error.json"
+        _show_progress_bar &
+        bar_pid="$!" && disown "$bar_pid"
+        timeout --foreground 70 ${work_dir}/speedtest --accept-license --accept-gdpr -f json-pretty ${option_para} >${work_dir}/speedtest-cli-${count}.json 2>${work_dir}/speedtest-cli-${count}-error.json
+        kill "$bar_pid" 2>/dev/null && printf "\r"
         # speedtest-cli输出
         if [ -s "$work_dir"/speedtest-cli-"$count".json ]; then
             # 节点名称
@@ -422,7 +421,10 @@ _bim_core_test() {
         local node_name latency jitter download upload
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # bim-core测试
-        _show_progress_bar "timeout --foreground 70 ${work_dir}/bim-core ${option_para} >${work_dir}/bim-core-${count}.json 2>${work_dir}/bim-core-${count}-error.json"
+        _show_progress_bar &
+        bar_pid="$!" && disown "$bar_pid"
+        timeout --foreground 70 ${work_dir}/bim-core ${option_para} >${work_dir}/bim-core-${count}.json 2>${work_dir}/bim-core-${count}-error.json
+        kill "$bar_pid" 2>/dev/null && printf "\r"
         # bim-core输出
         if [ -s "$work_dir"/bim-core-"$count".json ]; then
             # 节点名称
@@ -468,7 +470,10 @@ _speedtest_go_test() {
         local node_name latency jitter download upload
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # speedtest-go测试
-        _show_progress_bar "timeout --foreground 70 ${work_dir}/speedtest-go ${option_para} >${work_dir}/speedtest-go-${count}.json 2>${work_dir}/speedtest-go-${count}-error.json"
+        _show_progress_bar &
+        bar_pid="$!" && disown "$bar_pid"
+        timeout --foreground 70 ${work_dir}/speedtest-go ${option_para} >${work_dir}/speedtest-go-${count}.json 2>${work_dir}/speedtest-go-${count}-error.json
+        kill "$bar_pid" 2>/dev/null && printf "\r"
         # speedtest-go输出
         if [ -s "$work_dir"/speedtest-go-"$count".json ] && ! grep -q "Fatal" "$work_dir"/speedtest-go-"$count".json; then
             # 节点名称
@@ -527,7 +532,10 @@ _librespeed_cli_test() {
         local node_name latency jitter download upload
         local download_c="15" upload_c="15" latency_c="13" jitter_c="13"
         # librespeed-cli测试
-        _show_progress_bar "timeout --foreground 70 ${work_dir}/librespeed-cli --json ${option_para} >${work_dir}/librespeed-cli-${count}.json 2>${work_dir}/librespeed-cli-${count}-error.json"
+        _show_progress_bar &
+        bar_pid="$!" && disown "$bar_pid"
+        timeout --foreground 70 ${work_dir}/librespeed-cli --json ${option_para} >${work_dir}/librespeed-cli-${count}.json 2>${work_dir}/librespeed-cli-${count}-error.json
+        kill "$bar_pid" 2>/dev/null && printf "\r"
         # librespeed-cli输出
         if [ -s "$work_dir"/librespeed-cli-"$count".json ]; then
             # 节点名称
@@ -590,7 +598,10 @@ _iperf3_test() {
             # 上传
             local i_busy
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
-                _show_progress_bar "timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json"
+                _show_progress_bar &
+                bar_pid="$!" && disown "$bar_pid"
+                timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json
+                kill "$bar_pid" 2>/dev/null && printf "\r"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
@@ -609,7 +620,10 @@ _iperf3_test() {
             fi
             # 下载
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
-                _show_progress_bar "timeout --foreground 70 iperf3 -f m -R ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json"
+                _show_progress_bar &
+                bar_pid="$!" && disown "$bar_pid"
+                timeout --foreground 70 iperf3 -f m -R ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json
+                kill "$bar_pid" 2>/dev/null && printf "\r"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
@@ -631,7 +645,10 @@ _iperf3_test() {
         else
             # 单向
             for ((i_busy = 1; i_busy <= 65; i_busy++)); do
-                _show_progress_bar "timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json"
+                _show_progress_bar &
+                bar_pid="$!" && disown "$bar_pid"
+                timeout --foreground 70 iperf3 -f m ${option_para} >${work_dir}/iperf3-${count}.json 2>${work_dir}/iperf3-${count}-error.json
+                kill "$bar_pid" 2>/dev/null && printf "\r"
                 if grep -q "busy" "$work_dir"/iperf3-"$count"-error.json; then
                     sleep 0.5
                 fi
