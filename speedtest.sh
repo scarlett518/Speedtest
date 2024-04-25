@@ -3,7 +3,7 @@
 ######### 自定义常量 ##########
 
 _constant() {
-    script_version="v2024-04-07"
+    script_version="v2024-04-25"
     old_IFS="$IFS"
     work_dir="./sp-github-i-abc"
     node_set=""
@@ -32,12 +32,12 @@ _constant() {
     bim_core_tar_url_2="https://asset.bash.icu/https://github.com/veoco/bim-core/releases/download/v${bim_core_version}/bimc-${bim_core_arch}-unknown-linux-musl"
 
     # speedtest-go，https://github.com/showwin/speedtest-go
-    speedtest_go_version="1.6.9"
-    speedtest_go_tar_x86_64_sha256="0e179818fe42913dccb8c6bf6db940c067b9eca9557b4d11ff2721cb70e7eefd"
-    speedtest_go_tar_i386_sha256="f2f374ce79aa6b36e7a8c5db3601db4a7622a902c18cc42d502800c68c6667de"
-    speedtest_go_tar_arm64_sha256="cb10ceb476fb6c8702e3af77e54022ffe30e9d2fd4b85936a9966f5dd7f3037d"
-    speedtest_go_tar_armv7_sha256="8e9db4688e0d405230b7d00fbd904b1f3ab7635c52d1b65d8ff38d58d9260294"
-    speedtest_go_tar_armv6_sha256="bcca71c5daf2f9d9271709bbeddff26e63089a3be4ab3a2466f7a932ae8bec31"
+    speedtest_go_version="1.6.11"
+    speedtest_go_tar_x86_64_sha256="2603cf54513dd770353d66095a30b13d170d225a0a60fc07ee6d5f5a78e15a27"
+    speedtest_go_tar_i386_sha256="5ec1df89446aab656c0947c9028fa93b40ec83a4132e30b3dad978215103e294"
+    speedtest_go_tar_arm64_sha256="68b1be4cd6dbbd3d68216a106b578fd2bdf51b8606d3597743aefdb2f0234c24"
+    speedtest_go_tar_armv7_sha256="f30ba82ac4e6fd967302d505fa7380745d89a4ddcfb72f607b580ef507e5eb0a"
+    speedtest_go_tar_armv6_sha256="ccdc0a4281c193cccc027e7c2fb2b961e1eb3e4eab1dcf68b46bd0dafd2e895f"
     speedtest_go_tar_url=""
     speedtest_go_tar_url_1="https://github.com/showwin/speedtest-go/releases/download/v${speedtest_go_version}/speedtest-go_${speedtest_go_version}_Linux_${speedtest_go_arch}.tar.gz"
     speedtest_go_tar_url_2="https://asset.bash.icu/https://github.com/showwin/speedtest-go/releases/download/v${speedtest_go_version}/speedtest-go_${speedtest_go_version}_Linux_${speedtest_go_arch}.tar.gz"
